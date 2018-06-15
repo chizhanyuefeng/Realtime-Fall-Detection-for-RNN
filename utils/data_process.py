@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import os
 import pandas as pd
 import numpy as np
 
@@ -14,14 +15,38 @@ def extract_data(data_file, sampling_frequency):
     :return:
     """
     data = pd.read_csv(data_file, index_col=0)
+    data_size = len(data.label)
+    for i in range(data_size):
+        data.iat[i, 10] = Label[data.iloc[i, 10]]
 
-    col_data = np.arange(0, len(data.label), int(sampling_frequency/50))
+    col_data = np.arange(0, data_size, int(sampling_frequency/50))
     extract_data = data.iloc[col_data, [1, 2, 3, 4, 5, 6, 10]]
-    extract_data.to_csv('../dataset/test.csv', index=0)
 
+    save_path = '../dataset/raw/' + os.path.abspath(os.path.dirname(data_file)+os.path.sep+".").replace(RAW_DATA_PATH, '')
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    save_path = '../dataset/raw/' + data_file.replace(RAW_DATA_PATH, '')
+    extract_data.to_csv(save_path, index=0)
+
+def find_all_csv(path):
+    """
+    递归的查找所有文件并进行转化
+    :param path:
+    :return:
+    """
+    if not os.path.exists(path):
+        print('路径存在问题：', path)
+        return None
+
+    for i in os.listdir(path):
+        if os.path.isfile(path+"/"+i):
+            if 'csv' in i:
+                extract_data(path+"/"+i, 200)
+        else:
+            find_all_csv(path+"/"+i)
 
 def main():
-    extract_data(RAW_DATA_PATH + 'STU/STU_1_1_annotated.csv', 200)
+    find_all_csv(RAW_DATA_PATH)
 
 if __name__ == '__main__':
     main()
