@@ -1,31 +1,33 @@
 import tensorflow as tf
+from utils import parser_cfg_file
 
 class AFD_RNN(object):
 
-    time_step = 150
-    class_num = 8
-    num_units = 64
-    senor_data_num = 6
-    batch_size = 64
-
     def __init__(self):
-        self.build_net_graph()
+        net_config = parser_cfg_file('./config/rnn_net.cfg')
+        self.time_step = int(net_config['time_step'])
+        self.class_num = int(net_config['class_num'])
+        self.num_units = int(net_config['num_units'])
+        self.senor_data_num = int(net_config['senor_data_num'])
+        self.batch_size = int(net_config['batch_size'])
 
     def build_net_graph(self):
         self.x = tf.placeholder(tf.float32, [self.batch_size, self.time_step, self.senor_data_num])
-        self.label = tf.placeholder(tf.float32, [self.class_num])
+        #self.label = tf.placeholder(tf.float32, [self.class_num])
 
-        self.add_input_layer()
-        self.add_rnn_layer()
-        self.add_output_layer()
+        self._add_input_layer()
+        self._add_rnn_layer()
+        self._add_output_layer()
 
-    def add_input_layer(self):
+    def _add_input_layer(self):
         input_x = tf.reshape(self.x, [-1, self.senor_data_num])
-        weights_x = self.get_variable_weights([self.senor_data_num, self.num_units], 'input_weights')
-        biases_x = self.get_variable_biases([self.num_units], 'input_biases')
-        self.x_output = tf.reshape(tf.matmul(input_x, weights_x) + biases_x, [-1, self.time_step, self.num_units])
+        weights_x = self._get_variable_weights([self.senor_data_num, self.num_units], 'input_weights')
+        biases_x = self._get_variable_biases([self.num_units], 'input_biases')
 
-    def add_rnn_layer(self):
+        self.x_output = tf.reshape(tf.add(tf.matmul(input_x, weights_x), biases_x),
+                                   [-1, self.time_step, self.num_units])
+
+    def _add_rnn_layer(self):
         lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(self.num_units)
         self.cell_state = lstm_cell.zero_state(self.batch_size, dtype=tf.float32)
 
@@ -35,15 +37,15 @@ class AFD_RNN(object):
                                                            self.x_output,
                                                            initial_state=self.cell_state,
                                                            time_major=False)
-    def add_output_layer(self):
+    def _add_output_layer(self):
         outputs = tf.reshape(self.cell_outputs, [-1, self.time_step, self.num_units])
-        weights_outputs = self.get_variable_weights([self.num_units, self.class_num], 'outputs_weights')
-        biases_outputs = self.get_variable_biases([self.class_num], 'outputs_biases')
+        weights_outputs = self._get_variable_weights([self.num_units, self.class_num], 'outputs_weights')
+        biases_outputs = self._get_variable_biases([self.class_num], 'outputs_biases')
         self.predict = tf.reshape(tf.add(tf.matmul(outputs, weights_outputs), biases_outputs),
                                   [self.batch_size, self.time_step, self.class_num])
 
-    def get_variable_weights(self, shape, name):
+    def _get_variable_weights(self, shape, name):
         return tf.Variable(tf.truncated_normal(shape, stddev=0.1), dtype=tf.float32, name=name)
 
-    def get_variable_biases(self, shape, name):
+    def _get_variable_biases(self, shape, name):
         return tf.Variable(tf.constant(0.1, shape), dtype=tf.float32, name=name)
