@@ -34,13 +34,14 @@ class AFD_RNN(object):
         # outputs shape =[batch_size, max_time, cell_state_size]
         # LSTM final_state shape = [2, batch_size, cell_state_size]
         self.cell_outputs, self.final_state = tf.nn.dynamic_rnn(lstm_cell,
-                                                           self.x_output,
-                                                           initial_state=self.cell_state,
-                                                           time_major=False)
+                                                                self.x_output,
+                                                                initial_state=self.cell_state,
+                                                                time_major=False)
     def _add_output_layer(self):
         outputs = tf.reshape(self.cell_outputs, [-1, self.time_step, self.num_units])
         weights_outputs = self._get_variable_weights([self.num_units, self.class_num], 'outputs_weights')
         biases_outputs = self._get_variable_biases([self.class_num], 'outputs_biases')
+        
         self.predict = tf.reshape(tf.add(tf.matmul(outputs, weights_outputs), biases_outputs),
                                   [self.batch_size, self.time_step, self.class_num])
 
