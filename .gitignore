@@ -3,5 +3,6 @@
 .idea/
 *.pyc
 *.png
+raw/
 
 
