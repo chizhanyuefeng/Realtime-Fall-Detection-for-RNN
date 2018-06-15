@@ -12,12 +12,14 @@ class AFD_RNN(object):
         self.batch_size = int(net_config['batch_size'])
 
     def build_net_graph(self):
-        self.x = tf.placeholder(tf.float32, [self.batch_size, self.time_step, self.senor_data_num])
+        self.x = tf.placeholder(tf.float32, [None, self.time_step, self.senor_data_num])
         #self.label = tf.placeholder(tf.float32, [self.class_num])
 
         self._add_input_layer()
         self._add_rnn_layer()
-        self._add_output_layer()
+        predict = self._add_output_layer()
+
+        return predict
 
     def _add_input_layer(self):
         input_x = tf.reshape(self.x, [-1, self.senor_data_num])
@@ -41,9 +43,9 @@ class AFD_RNN(object):
         outputs = tf.reshape(self.cell_outputs, [-1, self.time_step, self.num_units])
         weights_outputs = self._get_variable_weights([self.num_units, self.class_num], 'outputs_weights')
         biases_outputs = self._get_variable_biases([self.class_num], 'outputs_biases')
-        
-        self.predict = tf.reshape(tf.add(tf.matmul(outputs, weights_outputs), biases_outputs),
-                                  [self.batch_size, self.time_step, self.class_num])
+
+        return tf.reshape(tf.add(tf.matmul(outputs, weights_outputs), biases_outputs),
+                          [-1, self.time_step, self.class_num])
 
     def _get_variable_weights(self, shape, name):
         return tf.Variable(tf.truncated_normal(shape, stddev=0.1), dtype=tf.float32, name=name)
