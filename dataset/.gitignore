@@ -1,0 +1,6 @@
+*.xml
+*/.idea/
+.idea/
+*.pyc
+*.png
+
