@@ -5,8 +5,9 @@ import numpy as np
 import configparser as cp
 
 RAW_DATA_PATH = '/home/tony/fall_research/fall_data/MobiAct_Dataset_v2.0/Annotated Data/'
-Label = {'STD':1,'WAL':2,'JOG':3,'JUM':4,'STU':5,'STN':6,'SCH':7,'SIT':8,'CHU':9,'CSI':10,
-         'CSO':11,'LYI':12,'FOL':0,'FKL':0,'BSC':0,'SDL':0}
+
+Label = {'STD':1, 'WAL':2, 'JOG':3, 'JUM':4, 'STU':5, 'STN':6, 'SCH':7, 'SIT':8, 'CHU':9,
+         'CSI':10, 'CSO':11, 'LYI':12, 'FOL':13, 'FKL':14, 'BSC':15, 'SDL':16}
 
 def extract_data(data_file, sampling_frequency):
     """
@@ -48,6 +49,11 @@ def find_all_csv(path):
 
 
 def parser_cfg_file(cfg_file):
+    """
+    读取配置文件中的信息
+    :param cfg_file: 文件路径
+    :return:
+    """
     content_params = {}
 
     config = cp.ConfigParser()
