@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 import numpy as np
+import configparser as cp
 
 RAW_DATA_PATH = '/home/tony/fall_research/fall_data/MobiAct_Dataset_v2.0/Annotated Data/'
 Label = {'STD':1,'WAL':2,'JOG':3,'JUM':4,'STU':5,'STN':6,'SCH':7,'SIT':8,'CHU':9,'CSI':10,
@@ -44,6 +45,27 @@ def find_all_csv(path):
                 extract_data(path+"/"+i, 200)
         else:
             find_all_csv(path+"/"+i)
+
+
+def parser_cfg_file(cfg_file):
+    content_params = {}
+
+    config = cp.ConfigParser()
+    config.read(cfg_file)
+
+    for section in config.sections():
+        # 获取配置文件中的net信息
+        if section == 'net':
+            for option in config.options(section):
+                content_params[option] = config.get(section,option)
+
+        # 获取配置文件中的train信息
+        if section == 'train':
+            for option in config.options(section):
+                content_params[option] = config.get(section,option)
+
+    return content_params
+
 
 def main():
     find_all_csv(RAW_DATA_PATH)
