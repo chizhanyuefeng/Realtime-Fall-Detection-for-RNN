@@ -24,10 +24,10 @@ def extract_data(data_file, sampling_frequency):
     col_data = np.arange(0, data_size, int(sampling_frequency/50))
     extract_data = data.iloc[col_data, [1, 2, 3, 4, 5, 6, 10]]
 
-    save_path = '../dataset/raw/' + os.path.abspath(os.path.dirname(data_file)+os.path.sep+".").replace(RAW_DATA_PATH, '')
+    save_path = './dataset/raw/' + os.path.abspath(os.path.dirname(data_file)+os.path.sep+".").replace(RAW_DATA_PATH, '')
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    save_path = '../dataset/raw/' + data_file.replace(RAW_DATA_PATH, '')
+    save_path = './dataset/raw/' + data_file.replace(RAW_DATA_PATH, '')
     extract_data.to_csv(save_path, index=0)
 
 def find_all_csv(path):
