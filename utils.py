@@ -6,8 +6,8 @@ import configparser as cp
 
 RAW_DATA_PATH = '/home/tony/fall_research/fall_data/MobiAct_Dataset_v2.0/Annotated Data/'
 
-Label = {'STD':1, 'WAL':2, 'JOG':3, 'JUM':4, 'STU':5, 'STN':6, 'SCH':7, 'SIT':8, 'CHU':9,
-         'CSI':10, 'CSO':11, 'LYI':12, 'FOL':13, 'FKL':14, 'BSC':15, 'SDL':16}
+Label = {'STD': 1, 'WAL': 2, 'JOG': 3, 'JUM': 4, 'STU': 5, 'STN': 6, 'SCH': 7, 'SIT': 8, 'CHU': 9,
+         'LYI': 10, 'FOL': 0, 'FKL': 0, 'BSC': 0, 'SDL': 0, 'CSI': 15, 'CSO': 16}
 
 def extract_data(data_file, sampling_frequency):
     """
