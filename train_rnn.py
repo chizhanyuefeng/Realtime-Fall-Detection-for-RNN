@@ -26,15 +26,15 @@ def train_rnn():
         sess.run(tf.global_variables_initializer())
 
         for step in range(train_iterior):
-            x, y = dataset.get_next_batch(50)
+            x, y = dataset.get_next_batch(rnn_net.batch_size)
             if step == 0:
                 feed_dict = {rnn_net.x:x, label:y}
             else:
                 feed_dict = {rnn_net.x: x, label: y, rnn_net.cell_state:state}
-            _, loss, state = sess.run([train_op, rnn_net.cell_state], feed_dict=feed_dict)
+            _, compute_loss, state = sess.run([train_op, loss, rnn_net.cell_state], feed_dict=feed_dict)
 
             if step%10 == 0:
-                accuracy = sess.run(accuracy, feed_dict=feed_dict)
-                print('train step = %d，loss = %f,accuracy = %f：'%(step, loss, accuracy))
+                compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
+                print('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
 
 train_rnn()
