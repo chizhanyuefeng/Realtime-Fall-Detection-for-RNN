@@ -4,5 +4,6 @@
 *.pyc
 *.png
 raw/
+train/
 
 
