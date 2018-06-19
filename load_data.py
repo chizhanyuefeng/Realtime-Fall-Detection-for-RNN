@@ -25,7 +25,9 @@ class LoadData(object):
         train_x = []
         for i in range(batchsize):
             start = random.randint(1, data_size-self.extract_data_size)
-            train_x.append(data.iloc[start:start+self.extract_data_size, 0:6])
+            train_x.append(data.iloc[start:start+self.extract_data_size, 0:6].values)
+        print(np.array(train_x).shape)
 
 if __name__ == '__main__':
-    data = LoadData('./dataset/train/', 3)
+    data = LoadData('./dataset/train/', time_step=3)
+    data.get_next_batch(2)

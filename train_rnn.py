@@ -19,6 +19,7 @@ def train_rnn():
     with tf.name_scope('loss'):
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=label, logits=predict))
         train_op = tf.train.AdamOptimizer(learing_rate).minimize(loss)
+
     with tf.name_scope('accuracy'):
         correct_pred = tf.equal(tf.argmax(y_, 1), tf.argmax(label, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
@@ -28,12 +29,12 @@ def train_rnn():
 
         for step in range(train_iterior):
             x, y = get_next_batch()
-            if step==0:
+            if step == 0:
                 feed_dict = {rnn_net.x:x, label:y}
             else:
                 feed_dict = {rnn_net.x: x, label: y, rnn_net.cell_state:state}
-            _, state = sess.run([train_op,rnn_net.cell_state], feed_dict=feed_dict)
+            _, loss, state = sess.run([train_op, rnn_net.cell_state], feed_dict=feed_dict)
 
             if step%100 == 0:
-                accuracy = sess.run(accuracy,feed_dict=feed_dict)
-                print('训练第%d步，准确率为%f：'%(step,accuracy))
+                accuracy = sess.run(accuracy, feed_dict=feed_dict)
+                print('train step = %d，loss = %f,accuracy = %f：'%(step, loss, accuracy))
