@@ -1,15 +1,11 @@
 import tensorflow as tf
 from build_rnn import AFD_RNN
 from utils import parser_cfg_file
-
-def get_next_batch():
-    x=0
-    y=0
-    return x,y
+from load_data import LoadData
 
 def train_rnn():
     train_content = parser_cfg_file('./config/train.cfg')
-    learing_rate = float(train_content['learing_rate'])
+    learing_rate = float(train_content['learning_rate'])
     train_iterior = int(train_content['train_iterior'])
 
     rnn_net = AFD_RNN()
@@ -24,11 +20,13 @@ def train_rnn():
         correct_pred = tf.equal(tf.argmax(y_, 1), tf.argmax(label, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
+    dataset = LoadData('./dataset/train/', time_step=rnn_net.time_step, class_num= rnn_net.class_num)
+
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
         for step in range(train_iterior):
-            x, y = get_next_batch()
+            x, y = dataset.get_next_batch(50)
             if step == 0:
                 feed_dict = {rnn_net.x:x, label:y}
             else:
@@ -38,3 +36,5 @@ def train_rnn():
             if step%100 == 0:
                 accuracy = sess.run(accuracy, feed_dict=feed_dict)
                 print('train step = %d，loss = %f,accuracy = %f：'%(step, loss, accuracy))
+
+train_rnn()
