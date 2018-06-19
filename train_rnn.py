@@ -1,5 +1,5 @@
 import tensorflow as tf
-from afd_rnn import AFD_RNN
+from build_rnn import AFD_RNN
 from utils import parser_cfg_file
 
 def get_next_batch():
