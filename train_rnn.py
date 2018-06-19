@@ -6,7 +6,7 @@ from load_data import LoadData
 def train_rnn():
     train_content = parser_cfg_file('./config/train.cfg')
     learing_rate = float(train_content['learning_rate'])
-    train_iterior = int(train_content['train_iterior'])
+    train_iterior = int(train_content['train_iteration'])
 
     rnn_net = AFD_RNN()
     predict = rnn_net.build_net_graph()
@@ -24,6 +24,7 @@ def train_rnn():
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
+        current_epoch = dataset.epoch
 
         for step in range(train_iterior):
             x, y = dataset.get_next_batch(rnn_net.batch_size)
@@ -36,5 +37,9 @@ def train_rnn():
             if step%10 == 0:
                 compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
                 print('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
+            if current_epoch != dataset.epoch:
+                current_epoch = dataset.epoch
+                compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
+                print('train epoch = %d,loss = %f,accuracy = %f' % (current_epoch, compute_loss, compute_accuracy))
 
 train_rnn()
