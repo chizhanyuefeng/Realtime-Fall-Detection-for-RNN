@@ -33,7 +33,7 @@ def train_rnn():
                 feed_dict = {rnn_net.x: x, label: y, rnn_net.cell_state:state}
             _, loss, state = sess.run([train_op, rnn_net.cell_state], feed_dict=feed_dict)
 
-            if step%100 == 0:
+            if step%10 == 0:
                 accuracy = sess.run(accuracy, feed_dict=feed_dict)
                 print('train step = %d，loss = %f,accuracy = %f：'%(step, loss, accuracy))
 

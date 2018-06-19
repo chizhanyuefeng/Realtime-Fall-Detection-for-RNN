@@ -15,7 +15,7 @@ class LoadData(object):
             print('%s is not found'%(data_path))
             raise FileExistsError
         self.time_step = time_step
-        self.extract_data_size = 50 * self.time_step
+        self.extract_data_size = self.time_step
         self.class_num = class_num
         self.data_file_list = [os.path.join(data_path, file) for file in os.listdir(data_path)]
 
