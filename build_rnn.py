@@ -40,7 +40,7 @@ class AFD_RNN(object):
                                                                 initial_state=self.cell_state,
                                                                 time_major=False)
     def _add_output_layer(self):
-        outputs = tf.reshape(self.cell_outputs, [-1, self.time_step, self.num_units])
+        outputs = tf.reshape(self.cell_outputs, [-1, self.num_units])
         weights_outputs = self._get_variable_weights([self.num_units, self.class_num], 'outputs_weights')
         biases_outputs = self._get_variable_biases([self.class_num], 'outputs_biases')
 
@@ -51,4 +51,4 @@ class AFD_RNN(object):
         return tf.Variable(tf.truncated_normal(shape, stddev=0.1), dtype=tf.float32, name=name)
 
     def _get_variable_biases(self, shape, name):
-        return tf.Variable(tf.constant(0.1, shape), dtype=tf.float32, name=name)
+        return tf.Variable(tf.constant(0.1, shape=shape), dtype=tf.float32, name=name)

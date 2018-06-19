@@ -17,7 +17,7 @@ def train_rnn():
         train_op = tf.train.AdamOptimizer(learing_rate).minimize(loss)
 
     with tf.name_scope('accuracy'):
-        correct_pred = tf.equal(tf.argmax(y_, 1), tf.argmax(label, 1))
+        correct_pred = tf.equal(tf.argmax(label, 1), tf.argmax(predict, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
     dataset = LoadData('./dataset/train/', time_step=rnn_net.time_step, class_num= rnn_net.class_num)
