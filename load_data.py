@@ -20,6 +20,9 @@ class LoadData(object):
         self.data_file_list = [os.path.join(data_path, file) for file in os.listdir(data_path)]
 
     def get_next_batch(self, batchsize):
+        if self.current_file_index+1 == len(self.data_file_list):
+            self.current_file_index = 0
+
         data = pd.read_csv(self.data_file_list[self.current_file_index])
         self.current_file_index += 1
         data_size = len(data.acc_x.values)
