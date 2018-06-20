@@ -1,45 +1,85 @@
+# -*- coding:utf-8 -*-
+import logging
+import time
 import tensorflow as tf
 from build_rnn import AFD_RNN
 from utils import parser_cfg_file
 from load_data import LoadData
 
-def train_rnn():
-    train_content = parser_cfg_file('./config/train.cfg')
-    learing_rate = float(train_content['learning_rate'])
-    train_iterior = int(train_content['train_iteration'])
 
-    rnn_net = AFD_RNN()
-    predict = rnn_net.build_net_graph()
-    label = tf.placeholder(tf.float32, [None, rnn_net.time_step, rnn_net.class_num])
+class AFD_RNN_Train(object):
 
-    with tf.name_scope('loss'):
-        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=label, logits=predict))
-        train_op = tf.train.AdamOptimizer(learing_rate).minimize(loss)
+    def __init__(self):
+        train_content = parser_cfg_file('./config/train.cfg')
+        self.learing_rate = float(train_content['learning_rate'])
+        self.train_iterior = int(train_content['train_iteration'])
+        self._train_logger_init()
 
-    with tf.name_scope('accuracy'):
-        correct_pred = tf.equal(tf.argmax(label, 1), tf.argmax(predict, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+        self.rnn_net = AFD_RNN()
+        self.predict = self.rnn_net.build_net_graph()
+        self.label = tf.placeholder(tf.float32, [None, self.rnn_net.time_step, self.rnn_net.class_num])
 
-    dataset = LoadData('./dataset/train/', time_step=rnn_net.time_step, class_num= rnn_net.class_num)
 
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        current_epoch = dataset.epoch
+    def _compute_loss(self):
+        with tf.name_scope('loss'):
+            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.label, logits=self.predict))
+            train_op = tf.train.AdamOptimizer(self.learing_rate).minimize(loss)
+        return loss, train_op
 
-        for step in range(train_iterior):
-            x, y = dataset.get_next_batch(rnn_net.batch_size)
-            if step == 0:
-                feed_dict = {rnn_net.x:x, label:y}
-            else:
-                feed_dict = {rnn_net.x: x, label: y, rnn_net.cell_state:state}
-            _, compute_loss, state = sess.run([train_op, loss, rnn_net.cell_state], feed_dict=feed_dict)
+    def train_rnn(self):
 
-            if step%10 == 0:
-                compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
-                print('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
-            if current_epoch != dataset.epoch:
-                current_epoch = dataset.epoch
-                compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
-                print('train epoch = %d,loss = %f,accuracy = %f' % (current_epoch, compute_loss, compute_accuracy))
+        loss, train_op = self._compute_loss()
 
-train_rnn()
+        with tf.name_scope('accuracy'):
+            correct_pred = tf.equal(tf.argmax(self.label, 1), tf.argmax(self.predict, 1))
+            accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
+        dataset = LoadData('./dataset/train/', time_step=self.rnn_net.time_step, class_num= self.rnn_net.class_num)
+
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            current_epoch = dataset.epoch
+
+            for step in range(self.train_iterior):
+                x, y = dataset.get_next_batch(self.rnn_net.batch_size)
+                if step == 0:
+                    feed_dict = {self.rnn_net.x: x, self.label: y}
+                else:
+                    feed_dict = {self.rnn_net.x: x, self.label: y, self.rnn_net.cell_state:state}
+                _, compute_loss, state = sess.run([train_op, loss, self.rnn_net.cell_state], feed_dict=feed_dict)
+
+                if step%10 == 0:
+                    compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
+                    self.train_logger.info('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
+                if current_epoch != dataset.epoch:
+                    current_epoch = dataset.epoch
+                    compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
+                    self.train_logger.info('train epoch = %d,loss = %f,accuracy = %f' % (current_epoch, compute_loss, compute_accuracy))
+
+
+    def _train_logger_init(self):
+        """
+        初始化log日志
+        :return:
+        """
+        self.train_logger = logging.getLogger('train')
+        self.train_logger.setLevel(logging.DEBUG)
+
+        # 添加文件输出
+        log_file = './train_logs/' + time.strftime('%Y%m%d%H%M', time.localtime(time.time())) + '.logs'
+        file_handler = logging.FileHandler(log_file, mode='w')
+        file_handler.setLevel(logging.DEBUG)
+        file_formatter = logging.Formatter('%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+        file_handler.setFormatter(file_formatter)
+        self.train_logger.addHandler(file_handler)
+
+        # 添加控制台输出
+        consol_handler = logging.StreamHandler()
+        consol_handler.setLevel(logging.DEBUG)
+        consol_formatter = logging.Formatter('%(message)s')
+        consol_handler.setFormatter(consol_formatter)
+        self.train_logger.addHandler(consol_handler)
+
+if __name__ == '__main__':
+    train = AFD_RNN_Train()
+    train.train_rnn()
