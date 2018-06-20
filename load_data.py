@@ -21,7 +21,7 @@ class LoadData(object):
         self._data_file_list = [os.path.join(data_path, file) for file in os.listdir(data_path)]
 
     def get_next_batch(self, batchsize):
-        if self._current_file_index+1 == len(self._data_file_list):
+        if self._current_file_index == len(self._data_file_list):
             self._current_file_index = 0
             self._epoch += 1
 
@@ -47,8 +47,12 @@ class LoadData(object):
     def epoch(self):
         return self._epoch
 
+    @property
+    def data_file_list(self):
+        return self._data_file_list
+
 if __name__ == '__main__':
     data = LoadData('./dataset/train/', time_step=3, class_num=11)
-    x,y=data.get_next_batch(2)
-    print(x.shape)
-    print(y.shape)
+    print(len(data.data_file_list))
+    #print(x.shape)
+    #print(y.shape)
