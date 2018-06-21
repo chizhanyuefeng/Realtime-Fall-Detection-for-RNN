@@ -113,32 +113,50 @@ def show_data(data, name=None):
     plt.close()
 
 def kalman_filter(data):
-    kalman = cv2.KalmanFilter(3, 3)
-    kalman.measurementMatrix = np.array([[1, 0, 0],
-                                         [0, 1, 0],
-                                         [0, 0, 1]], np.float32)
-    kalman.transitionMatrix = np.array([[1, 0, 0],
-                                        [0, 1, 0],
-                                        [0, 0, 1]], np.float32)
-    kalman.processNoiseCov = np.array([[1, 0, 0],
-                                       [0, 1, 0],
-                                       [0, 0, 1]], np.float32) * 0.003
-    kalman.measurementNoiseCov = np.array([[1, 0, 0],
-                                           [0, 1, 0],
-                                           [0, 0, 1]], np.float32) * 1
+    kalman = cv2.KalmanFilter(6, 6)
+    kalman.measurementMatrix = np.array([[1, 0, 0, 0, 0, 0],
+                                         [0, 1, 0, 0, 0, 0],
+                                         [0, 0, 1, 0, 0, 0],
+                                         [0, 0, 0, 1, 0, 0],
+                                         [0, 0, 0, 0, 1, 0],
+                                         [0, 0, 0, 0, 0, 1]], np.float32)
+    kalman.transitionMatrix = np.array([[1, 0, 0, 0, 0, 0],
+                                         [0, 1, 0, 0, 0, 0],
+                                         [0, 0, 1, 0, 0, 0],
+                                         [0, 0, 0, 1, 0, 0],
+                                         [0, 0, 0, 0, 1, 0],
+                                         [0, 0, 0, 0, 0, 1]], np.float32)
+    kalman.processNoiseCov = np.array([[1, 0, 0, 0, 0, 0],
+                                       [0, 1, 0, 0, 0, 0],
+                                       [0, 0, 1, 0, 0, 0],
+                                       [0, 0, 0, 1, 0, 0],
+                                       [0, 0, 0, 0, 1, 0],
+                                       [0, 0, 0, 0, 0, 1]], np.float32) * 0.003
+    kalman.measurementNoiseCov = np.array([[1, 0, 0, 0, 0, 0],
+                                          [0, 1, 0, 0, 0, 0],
+                                          [0, 0, 1, 0, 0, 0],
+                                          [0, 0, 0, 1, 0, 0],
+                                          [0, 0, 0, 0, 1, 0],
+                                          [0, 0, 0, 0, 0, 1]], np.float32) * 1
 
     row_num = data.acc_x.size
 
     for i in range(row_num):
         correct = np.array([np.float32(data.iloc[i, 0]),
                             np.float32(data.iloc[i, 1]),
-                            np.float32(data.iloc[i, 2])],
-                           np.float32).reshape([3, 1])
+                            np.float32(data.iloc[i, 2]),
+                            np.float32(data.iloc[i, 3]),
+                            np.float32(data.iloc[i, 4]),
+                            np.float32(data.iloc[i, 5])],
+                           np.float32).reshape([6, 1])
         kalman.correct(correct)
         predict = kalman.predict()
         data.iloc[i, 0] = predict[0]
         data.iloc[i, 1] = predict[1]
         data.iloc[i, 2] = predict[2]
+        data.iloc[i, 3] = predict[3]
+        data.iloc[i, 4] = predict[4]
+        data.iloc[i, 5] = predict[5]
 
     return data
 
@@ -151,10 +169,10 @@ if __name__ == '__main__':
         print('./dataset/train/BSC_1_1_annotated.csv', '文件不存在！')
     data = pd.read_csv('./dataset/train/BSC_1_1_annotated.csv')
 
-    #show_data(data)
+    show_data(data)
     data = kalman_filter(data)
     data.to_csv('./dataset/train/2.csv', index=False)
-    #show_data(data)
+    show_data(data)
     # a = data.iloc[4:5,0]
     # print(a)
 
