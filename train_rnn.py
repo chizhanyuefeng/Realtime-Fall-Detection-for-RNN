@@ -4,8 +4,7 @@ import time
 import tensorflow as tf
 from build_rnn import AFD_RNN
 from utils import parser_cfg_file
-from load_data import LoadData
-
+from data_load import DataLoad
 
 class AFD_RNN_Train(object):
 
@@ -22,7 +21,7 @@ class AFD_RNN_Train(object):
     def _compute_loss(self):
         with tf.name_scope('loss'):
             # [batchszie, time_step, class_num] ==> [time_step][batchsize, class_num]
-            predict = tf.unstack(self.predict, axis=1)
+            predict = tf.unstack(self.predict, axis=0)
             label = tf.unstack(self.label, axis=1)
 
             loss = [tf.nn.softmax_cross_entropy_with_logits(labels=label[i], logits=predict[i]) for i in range(self.rnn_net.time_step) ]
@@ -35,14 +34,14 @@ class AFD_RNN_Train(object):
         loss, train_op = self._compute_loss()
 
         with tf.name_scope('accuracy'):
-            correct_pred = tf.equal(tf.argmax(self.label, 1), tf.argmax(self.predict, 1))
+            predict = tf.transpose(self.predict, [1,0,2])
+            correct_pred = tf.equal(tf.argmax(self.label, 2), tf.argmax(predict, axis=2))
             accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
-        dataset = LoadData('./dataset/train/', time_step=self.rnn_net.time_step, class_num= self.rnn_net.class_num)
+        dataset = DataLoad('./dataset/train/', time_step=self.rnn_net.time_step, class_num= self.rnn_net.class_num)
 
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            current_epoch = dataset.epoch
 
             for step in range(self.train_iterior):
                 x, y = dataset.get_next_batch(self.rnn_net.batch_size)
@@ -55,10 +54,6 @@ class AFD_RNN_Train(object):
                 if step%10 == 0:
                     compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
                     self.train_logger.info('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
-                if current_epoch != dataset.epoch:
-                    current_epoch = dataset.epoch
-                    compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
-                    self.train_logger.info('train epoch = %d,loss = %f,accuracy = %f' % (current_epoch, compute_loss, compute_accuracy))
 
     def _train_logger_init(self):
         """
