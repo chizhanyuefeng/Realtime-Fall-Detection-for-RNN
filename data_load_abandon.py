@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pandas as pd
 
-class LoadData(object):
+class DataLoad(object):
 
     _data_file_list = None
     _current_file_index = 0
@@ -52,7 +52,7 @@ class LoadData(object):
         return self._data_file_list
 
 if __name__ == '__main__':
-    data = LoadData('./dataset/train/', time_step=10, class_num=2)
+    data = DataLoad('./dataset/train/', time_step=10, class_num=2)
     x,y = data.get_next_batch(1)
     print(x)
     print(y)
