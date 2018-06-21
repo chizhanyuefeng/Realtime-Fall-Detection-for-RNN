@@ -33,7 +33,7 @@ class LoadData(object):
         label_y = []
         for i in range(batchsize):
             start = random.randint(1, data_size-self._extract_data_size)
-            train_x.append(data.iloc[start:start+self._extract_data_size, 0:6].values)
+            train_x.append(data.iloc[start:start+self._extract_data_size, 0:3].values)
             label = [[0 for i in range(self._class_num)] for _ in range(self._extract_data_size)]
 
             for s in range(self._extract_data_size):
@@ -52,7 +52,7 @@ class LoadData(object):
         return self._data_file_list
 
 if __name__ == '__main__':
-    data = LoadData('./dataset/train/', time_step=3, class_num=11)
-    print(len(data.data_file_list))
-    #print(x.shape)
-    #print(y.shape)
+    data = LoadData('./dataset/train/', time_step=10, class_num=2)
+    x,y = data.get_next_batch(1)
+    print(x)
+    print(y)
