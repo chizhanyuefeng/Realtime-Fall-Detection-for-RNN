@@ -74,7 +74,7 @@ def parser_cfg_file(cfg_file):
 
     return content_params
 
-def show_data(data , name='1.png'):
+def show_data(data, name=None):
     '''
     show data
     :param data: DataFrame
@@ -106,8 +106,10 @@ def show_data(data , name='1.png'):
     plt.legend()
     plt.xticks(x_flag)
     #plt.show()
-
-    plt.savefig(name)
+    if name is None:
+        plt.show()
+    else:
+        plt.savefig(name)
     plt.close()
 
 def kalman_filter(data):
@@ -152,6 +154,7 @@ if __name__ == '__main__':
     #show_data(data)
     data = kalman_filter(data)
     data.to_csv('./dataset/train/2.csv', index=False)
-    #show_data(data,'2.png')
+    #show_data(data)
     # a = data.iloc[4:5,0]
     # print(a)
+
