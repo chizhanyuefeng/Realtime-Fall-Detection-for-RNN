@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import os
+import cv2
 import pandas as pd
 import numpy as np
 import configparser as cp
+import matplotlib.pyplot as plt
 
 RAW_DATA_PATH = '/home/tony/fall_research/fall_data/MobiAct_Dataset_v2.0/Annotated Data/'
 
@@ -72,9 +74,45 @@ def parser_cfg_file(cfg_file):
 
     return content_params
 
+def show_data(csv_file):
+    if os.path.exists(csv_file) == False:
+        print(csv_file, '文件不存在！')
+        return None
+    data = pd.read_csv(csv_file)
+    num = data.acc_x.size
+
+    # kalman = cv2.KalmanFilter()
+    # kalman.predict()
+    # kalman.
+
+    x = np.arange(num)
+    fig = plt.figure(1, figsize=(100, 60))
+    # 子表1绘制加速度传感器数据
+    plt.subplot(2, 1, 1)
+    plt.title('acc')
+    plt.plot(x, data.acc_x, label='x')
+    plt.plot(x, data.acc_y, label='y')
+    plt.plot(x, data.acc_z, label='z')
+
+    # 添加解释图标
+    plt.legend()
+    x_flag = np.arange(0, num, num / 10)
+    plt.xticks(x_flag)
+
+    # 子表2绘制陀螺仪传感器数据
+    plt.subplot(2, 1, 2)
+    plt.title('gyro')
+    plt.plot(x, data.gyro_x, label='x')
+    plt.plot(x, data.gyro_y, label='y')
+    plt.plot(x, data.gyro_z, label='z')
+
+    plt.legend()
+    plt.xticks(x_flag)
+    plt.show()
 
 def main():
     find_all_csv(RAW_DATA_PATH)
 
 if __name__ == '__main__':
-    main()
+    #main()
+    show_data('./dataset/train/BSC_1_1_annotated.csv')
