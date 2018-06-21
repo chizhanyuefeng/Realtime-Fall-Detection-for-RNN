@@ -1,10 +1,19 @@
+# pycharm
 *.xml
 */.idea/
 .idea/
 *.pyc
 *.png
+
+# dataset
 raw/
 train/
+
+# train logs
 *.logs
+
+# model
+*ckpt*
+checkpoint
 
 
