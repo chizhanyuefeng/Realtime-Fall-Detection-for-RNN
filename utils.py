@@ -74,16 +74,13 @@ def parser_cfg_file(cfg_file):
 
     return content_params
 
-def show_data(csv_file):
-    if os.path.exists(csv_file) == False:
-        print(csv_file, '文件不存在！')
-        return None
-    data = pd.read_csv(csv_file)
+def show_data(data , name='1.png'):
+    '''
+    show data
+    :param data: DataFrame
+    :return:
+    '''
     num = data.acc_x.size
-
-    # kalman = cv2.KalmanFilter()
-    # kalman.predict()
-    # kalman.
 
     x = np.arange(num)
     fig = plt.figure(1, figsize=(100, 60))
@@ -108,11 +105,53 @@ def show_data(csv_file):
 
     plt.legend()
     plt.xticks(x_flag)
-    plt.show()
+    #plt.show()
+
+    plt.savefig(name)
+    plt.close()
+
+def kalman_filter(data):
+    kalman = cv2.KalmanFilter(3, 3)
+    kalman.measurementMatrix = np.array([[1, 0, 0],
+                                         [0, 1, 0],
+                                         [0, 0, 1]], np.float32)
+    kalman.transitionMatrix = np.array([[1, 0, 0],
+                                        [0, 1, 0],
+                                        [0, 0, 1]], np.float32)
+    kalman.processNoiseCov = np.array([[1, 0, 0],
+                                       [0, 1, 0],
+                                       [0, 0, 1]], np.float32) * 0.003
+    kalman.measurementNoiseCov = np.array([[1, 0, 0],
+                                           [0, 1, 0],
+                                           [0, 0, 1]], np.float32) * 1
+
+    row_num = data.acc_x.size
+
+    for i in range(row_num):
+        correct = np.array([np.float32(data.iloc[i, 0]),
+                            np.float32(data.iloc[i, 1]),
+                            np.float32(data.iloc[i, 2])],
+                           np.float32).reshape([3, 1])
+        kalman.correct(correct)
+        predict = kalman.predict()
+        data.iloc[i, 0] = predict[0]
+        data.iloc[i, 1] = predict[1]
+        data.iloc[i, 2] = predict[2]
+
+    return data
 
 def main():
     find_all_csv(RAW_DATA_PATH)
 
 if __name__ == '__main__':
     #main()
-    show_data('./dataset/train/BSC_1_1_annotated.csv')
+    if os.path.exists('./dataset/train/BSC_1_1_annotated.csv') == False:
+        print('./dataset/train/BSC_1_1_annotated.csv', '文件不存在！')
+    data = pd.read_csv('./dataset/train/BSC_1_1_annotated.csv')
+
+    #show_data(data)
+    data = kalman_filter(data)
+    data.to_csv('./dataset/train/2.csv', index=False)
+    #show_data(data,'2.png')
+    # a = data.iloc[4:5,0]
+    # print(a)
