@@ -19,10 +19,14 @@ class AFD_RNN_Train(object):
         self.predict = self.rnn_net.build_net_graph()
         self.label = tf.placeholder(tf.float32, [None, self.rnn_net.time_step, self.rnn_net.class_num])
 
-
     def _compute_loss(self):
         with tf.name_scope('loss'):
-            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.label, logits=self.predict))
+            # [batchszie, time_step, class_num] ==> [time_step][batchsize, class_num]
+            predict = tf.unstack(self.predict, axis=1)
+            label = tf.unstack(self.label, axis=1)
+
+            loss = [tf.nn.softmax_cross_entropy_with_logits(labels=label[i], logits=predict[i]) for i in range(self.rnn_net.time_step) ]
+            loss = tf.reduce_mean(loss)
             train_op = tf.train.AdamOptimizer(self.learing_rate).minimize(loss)
         return loss, train_op
 
@@ -56,7 +60,6 @@ class AFD_RNN_Train(object):
                     compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
                     self.train_logger.info('train epoch = %d,loss = %f,accuracy = %f' % (current_epoch, compute_loss, compute_accuracy))
 
-
     def _train_logger_init(self):
         """
         初始化log日志
@@ -83,3 +86,12 @@ class AFD_RNN_Train(object):
 if __name__ == '__main__':
     train = AFD_RNN_Train()
     train.train_rnn()
+
+    # a = tf.zeros([1,2,3])
+    # b = tf.unstack(a, axis=1)
+    # c = tf.zeros([2,1,3])
+    # sess = tf.Session()
+    # d = b[0]
+    # print(sess.run(b[0]))
+    #
+    # pass
