@@ -32,7 +32,7 @@ def extract_data(data_file, sampling_frequency):
     save_path = './dataset/raw/' + data_file.replace(RAW_DATA_PATH, '')
     extract_data.to_csv(save_path, index=0)
 
-def find_all_csv(path):
+def find_all_data_and_extract(path):
     """
     递归的查找所有文件并进行转化
     :param path:
@@ -47,8 +47,7 @@ def find_all_csv(path):
             if 'csv' in i:
                 extract_data(path+"/"+i, 200)
         else:
-            find_all_csv(path+"/"+i)
-
+            find_all_data_and_extract(path+"/"+i)
 
 def parser_cfg_file(cfg_file):
     """
@@ -142,13 +141,7 @@ def kalman_filter(data):
     row_num = data.acc_x.size
 
     for i in range(row_num):
-        correct = np.array([np.float32(data.iloc[i, 0]),
-                            np.float32(data.iloc[i, 1]),
-                            np.float32(data.iloc[i, 2]),
-                            np.float32(data.iloc[i, 3]),
-                            np.float32(data.iloc[i, 4]),
-                            np.float32(data.iloc[i, 5])],
-                           np.float32).reshape([6, 1])
+        correct = np.array(data.iloc[i, 0:6].values, np.float32).reshape([6, 1])
         kalman.correct(correct)
         predict = kalman.predict()
         data.iloc[i, 0] = predict[0]
@@ -160,19 +153,42 @@ def kalman_filter(data):
 
     return data
 
+def find_all_data_and_filtrate(path):
+    """
+    递归的查找所有文件并进行kalman过滤
+    :param path:
+    :return:
+    """
+    if not os.path.exists(path):
+        print('路径存在问题：', path)
+        return None
+
+    for i in os.listdir(path):
+        if os.path.isfile(path+"/"+i):
+            if 'csv' in i:
+                data = pd.read_csv(path+"/"+i)
+                data = kalman_filter(data)
+                data.to_csv(path+"/"+i, index=False)
+        else:
+            find_all_data_and_filtrate(path+"/"+i)
+
 def main():
-    find_all_csv(RAW_DATA_PATH)
+    #find_all_data_and_extract(RAW_DATA_PATH)
+    find_all_data_and_filtrate('./dataset/train/')
 
 if __name__ == '__main__':
     #main()
-    if os.path.exists('./dataset/train/BSC_1_1_annotated.csv') == False:
-        print('./dataset/train/BSC_1_1_annotated.csv', '文件不存在！')
-    data = pd.read_csv('./dataset/train/BSC_1_1_annotated.csv')
+    # if os.path.exists('./dataset/train/BSC_1_1_annotated.csv') == False:
+    #     print('./dataset/train/BSC_1_1_annotated.csv', '文件不存在！')
+    # data = pd.read_csv('./dataset/train/BSC_1_1_annotated.csv')
+    #
+    # #show_data(data)
+    # data = kalman_filter(data)
+    # data.to_csv('./dataset/train/BSC_1_1_annotated.csv', index=False)
+    # #show_data(data)
+    # # a = data.iloc[4:5,0]
+    # # print(a)
+    data = pd.read_csv('./dataset/train/STU_1_1_annotated.csv')
 
     show_data(data)
-    data = kalman_filter(data)
-    data.to_csv('./dataset/train/2.csv', index=False)
-    show_data(data)
-    # a = data.iloc[4:5,0]
-    # print(a)
 
