@@ -39,13 +39,14 @@ class AFD_RNN_Train(object):
             accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
         dataset = DataLoad('./dataset/train/', time_step=self.rnn_net.time_step, class_num= self.rnn_net.class_num)
+        saver = tf.train.Saver()
 
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
-            for step in range(self.train_iterior):
+            for step in range(1, self.train_iterior+1):
                 x, y = dataset.get_next_batch(self.rnn_net.batch_size)
-                if step == 0:
+                if step == 1:
                     feed_dict = {self.rnn_net.x: x, self.label: y}
                 else:
                     feed_dict = {self.rnn_net.x: x, self.label: y, self.rnn_net.cell_state:state}
@@ -54,6 +55,9 @@ class AFD_RNN_Train(object):
                 if step%10 == 0:
                     compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
                     self.train_logger.info('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
+                if step%10 == 0:
+                    save_path = saver.save(sess, './model/model.ckpt')
+                    self.train_logger.info(("train step = %d ,model save to =%s" % (step, save_path)))
 
     def _train_logger_init(self):
         """
