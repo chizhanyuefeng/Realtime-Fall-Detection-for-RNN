@@ -47,9 +47,9 @@ class AFD_RNN_Train(object):
             for step in range(1, self.train_iterior+1):
                 x, y = dataset.get_next_batch(self.rnn_net.batch_size)
                 if step == 1:
-                    feed_dict = {self.rnn_net.x: x, self.label: y}
+                    feed_dict = {self.rnn_net.input_tensor: x, self.label: y}
                 else:
-                    feed_dict = {self.rnn_net.x: x, self.label: y, self.rnn_net.cell_state:state}
+                    feed_dict = {self.rnn_net.input_tensor: x, self.label: y, self.rnn_net.cell_state:state}
                 _, compute_loss, state = sess.run([train_op, loss, self.rnn_net.cell_state], feed_dict=feed_dict)
 
                 if step%10 == 0:
