@@ -8,6 +8,7 @@
 # dataset
 raw/
 train/
+test/
 
 # train logs
 *.logs
