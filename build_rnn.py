@@ -1,10 +1,9 @@
 import tensorflow as tf
-from utils import parser_cfg_file
 
 class AFD_RNN(object):
 
-    def __init__(self, test_batch_size=None):
-        net_config = parser_cfg_file('./config/rnn_net.cfg')
+    def __init__(self, net_config, test_batch_size=None):
+
         self.time_step = int(net_config['time_step'])
         self.class_num = int(net_config['class_num'])
         self.num_units = int(net_config['num_units'])

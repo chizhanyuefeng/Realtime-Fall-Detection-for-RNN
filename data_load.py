@@ -26,7 +26,7 @@ class DataLoad(object):
                 self._all_data = self._all_data.append(data)
         print(self._all_data.shape)
 
-    def get_next_batch(self, batchsize):
+    def get_batch(self, batchsize):
 
         data_size = len(self._all_data.acc_x.values)
 
@@ -47,6 +47,6 @@ class DataLoad(object):
 
 if __name__ == '__main__':
     data = DataLoad('./dataset/train/', time_step=150, class_num=11)
-    x,y = data.get_next_batch(50)
+    x, y = data.get_batch(50)
     print(x.shape)
     print(y.shape)

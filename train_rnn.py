@@ -8,13 +8,14 @@ from data_load import DataLoad
 
 class AFD_RNN_Train(object):
 
-    def __init__(self):
-        train_content = parser_cfg_file('./config/train.cfg')
-        self.learing_rate = float(train_content['learning_rate'])
-        self.train_iterior = int(train_content['train_iteration'])
+    def __init__(self, train_config):
+
+        self.learing_rate = float(train_config['learning_rate'])
+        self.train_iterior = int(train_config['train_iteration'])
         self._train_logger_init()
 
-        self.rnn_net = AFD_RNN()
+        net_config = parser_cfg_file('./config/rnn_net.cfg')
+        self.rnn_net = AFD_RNN(net_config)
         self.predict = self.rnn_net.build_net_graph()
         self.label = tf.placeholder(tf.float32, [None, self.rnn_net.time_step, self.rnn_net.class_num])
 
@@ -45,7 +46,7 @@ class AFD_RNN_Train(object):
             sess.run(tf.global_variables_initializer())
 
             for step in range(1, self.train_iterior+1):
-                x, y = dataset.get_next_batch(self.rnn_net.batch_size)
+                x, y = dataset.get_batch(self.rnn_net.batch_size)
                 if step == 1:
                     feed_dict = {self.rnn_net.input_tensor: x, self.label: y}
                 else:
@@ -83,7 +84,8 @@ class AFD_RNN_Train(object):
         self.train_logger.addHandler(consol_handler)
 
 if __name__ == '__main__':
-    train = AFD_RNN_Train()
+    train_config = parser_cfg_file('./config/train.cfg')
+    train = AFD_RNN_Train(train_config)
     train.train_rnn()
 
     # a = tf.zeros([1,2,3])
