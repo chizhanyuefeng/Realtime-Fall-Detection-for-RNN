@@ -55,9 +55,9 @@ class AFD_RNN_Train(object):
                 if step%10 == 0:
                     compute_accuracy = sess.run(accuracy, feed_dict=feed_dict)
                     self.train_logger.info('train step = %d,loss = %f,accuracy = %f'%(step, compute_loss, compute_accuracy))
-                if step%10 == 0:
+                if step%1000 == 0:
                     save_path = saver.save(sess, './model/model.ckpt')
-                    self.train_logger.info(("train step = %d ,model save to =%s" % (step, save_path)))
+                    self.train_logger.info("train step = %d ,model save to =%s" % (step, save_path))
 
     def _train_logger_init(self):
         """

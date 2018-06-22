@@ -24,6 +24,7 @@ class DataLoad(object):
             if 'csv' in f:
                 data = pd.read_csv(f, index_col=False)
                 self._all_data = self._all_data.append(data)
+        print(self._all_data.shape)
 
     def get_next_batch(self, batchsize):
 
@@ -45,7 +46,7 @@ class DataLoad(object):
 
 
 if __name__ == '__main__':
-    data = DataLoad('./dataset/train/', time_step=10, class_num=2)
-    # x,y = data.get_next_batch(1)
-    # print(x)
-    # print(y)
+    data = DataLoad('./dataset/train/', time_step=150, class_num=11)
+    x,y = data.get_next_batch(50)
+    print(x.shape)
+    print(y.shape)

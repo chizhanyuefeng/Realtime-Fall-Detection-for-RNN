@@ -28,7 +28,6 @@ class AFD_RNN(object):
         self.x_output = tf.reshape(tf.add(tf.matmul(input_x, weights_x), biases_x),
                                    [-1, self.time_step, self.num_units])
 
-
     def _add_rnn_layer(self):
         self.x_output = tf.unstack(self.x_output, axis=1)
         lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(self.num_units)

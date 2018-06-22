@@ -1,3 +1,8 @@
+"""
+本DataLoad将所有train文件下的csv文件进行训练，但没有将所有csv文件进行合并。
+从每个csv中获取一次batchsize数据进行训练，这样并没有保证数据的随机性，所以训练效果会差。
+摒弃这个版本。
+"""
 import os
 import random
 import numpy as np
