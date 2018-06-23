@@ -24,25 +24,32 @@ class DataLoad(object):
             if 'csv' in f:
                 data = pd.read_csv(f, index_col=False)
                 self._all_data = self._all_data.append(data)
-        print(self._all_data.shape)
 
-    def get_batch(self, batchsize):
-
+    def get_batch(self, batchsize, start_list=None):
         data_size = len(self._all_data.acc_x.values)
 
+        if start_list is None:
+            start_pos = [random.randint(1, data_size - self._extract_data_size) for _ in range(data_size)]
+        else:
+            start_pos = start_list
         train_x = []
         label_y = []
         for i in range(batchsize):
-            start = random.randint(1, data_size-self._extract_data_size)
-            train_x.append(self._all_data.iloc[start:start+self._extract_data_size, 0:3].values)
-            label = [[0 for i in range(self._class_num)] for _ in range(self._extract_data_size)]
+
+            train_x.append(self._all_data.iloc[start_pos[i]:start_pos[i]+self._extract_data_size, 0:3].values)
+            label = [[0 for _ in range(self._class_num)] for _ in range(self._extract_data_size)]
 
             for s in range(self._extract_data_size):
-                j = self._all_data.iloc[start + s:start + s + 1, 6].values[0]
+                j = self._all_data.iloc[start_pos[i] + s:start_pos[i] + s + 1, 6].values[0]
                 label[s][j] = 1
             label_y.append(label)
 
         return np.array(train_x), np.array(label_y)
+
+    def get_test_data(self):
+
+        return np.array(self._all_data.iloc[:, 0:3].values), np.array(self._all_data.iloc[:, 6].values)
+
 
 
 if __name__ == '__main__':
