@@ -31,7 +31,12 @@ class DataLoad(object):
         if start_list is None:
             start_pos = [random.randint(1, data_size - self._extract_data_size) for _ in range(data_size)]
         else:
+            if len(start_list) != batchsize:
+                print('batchisze = ', batchsize)
+                print('start_list length = ', len(start_list))
+                raise KeyError('batchsize is no equal to start_list length!')
             start_pos = start_list
+
         train_x = []
         label_y = []
         for i in range(batchsize):
