@@ -2,12 +2,16 @@ import tensorflow as tf
 
 class AFD_RNN(object):
 
-    def __init__(self, net_config, test_batch_size=None):
+    def __init__(self, net_config, test_batch_size=None, time_step=None):
 
-        self.time_step = int(net_config['time_step'])
         self.class_num = int(net_config['class_num'])
         self.num_units = int(net_config['num_units'])
         self.senor_data_num = int(net_config['senor_data_num'])
+
+        if time_step is None:
+            self.time_step = int(net_config['time_step'])
+        else:
+            self.time_step = time_step
 
         if test_batch_size is None:
             self.batch_size = int(net_config['batch_size'])
