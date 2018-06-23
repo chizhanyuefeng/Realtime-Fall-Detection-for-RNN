@@ -52,8 +52,14 @@ class DataLoad(object):
         return np.array(train_x), np.array(label_y)
 
     def get_test_data(self):
-
-        return np.array(self._all_data.iloc[:, 0:3].values), np.array(self._all_data.iloc[:, 6].values)
+        """
+        x shape = [datasize, 3]
+        y shape = [datasize ,1]
+        :return:
+        """
+        x = np.array(self._all_data.iloc[:, 0:3].values)
+        y = np.array(self._all_data.iloc[:, 6].values)
+        return x, y
 
 
 
