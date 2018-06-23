@@ -55,20 +55,21 @@ class Run_AFD_RNN(object):
         ay = [0 for _ in range(150)]
         az = [0 for _ in range(150)]
 
-        num = int(data_size / 5)
+        run_step = 10
+        num = int(data_size / run_step)
 
         start_time = time.time()
 
         for i in range(num):
-            if i > int(time_step/5):
-                predict = run.run(test_data[i * 5 - time_step: i * 5, :])
-                title = 'correct:' + Label[test_label[i * 5]] + '     predict:' + Label[predict[int(time_step - 1)][0]]
+            if i > int(time_step/run_step):
+                predict = run.run(test_data[i * run_step - time_step: i * run_step, :])
+                title = 'correct:' + Label[test_label[i * run_step]] + '     predict:' + Label[predict[int(time_step - 1)][0]]
             else:
-                title = 'correct:' + Label[test_label[i * 5]] + '     predict:' + 'unknow'
+                title = 'correct:' + Label[test_label[i * run_step]] + '     predict:' + 'unknow'
 
-            self._update_show_data(ax, 5, test_data[i * 5:i * 5 + 5, 0])
-            self._update_show_data(ay, 5, test_data[i * 5:i * 5 + 5, 1])
-            self._update_show_data(az, 5, test_data[i * 5:i * 5 + 5, 2])
+            self._update_show_data(ax, run_step, test_data[i * run_step:i * run_step + run_step, 0])
+            self._update_show_data(ay, run_step, test_data[i * run_step:i * run_step + run_step, 1])
+            self._update_show_data(az, run_step, test_data[i * run_step:i * run_step + run_step, 2])
 
             plt.cla()
             plt.plot(x, ax)
@@ -83,7 +84,7 @@ class Run_AFD_RNN(object):
 
 if __name__ == '__main__':
     net_config = parser_cfg_file('./config/rnn_net.cfg')
-    time_step = 80
+    time_step = 50
     class_num = int(net_config['class_num'])
 
     run = Run_AFD_RNN('./model/', time_step=time_step)
