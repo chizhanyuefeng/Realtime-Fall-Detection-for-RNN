@@ -174,10 +174,10 @@ def find_all_data_and_filtrate(path):
 
 def main():
     #find_all_data_and_extract(RAW_DATA_PATH)
-    find_all_data_and_filtrate('./dataset/train/')
+    find_all_data_and_filtrate('./dataset/test/')
 
 if __name__ == '__main__':
-    #main()
+    main()
     # if os.path.exists('./dataset/train/BSC_1_1_annotated.csv') == False:
     #     print('./dataset/train/BSC_1_1_annotated.csv', '文件不存在！')
     # data = pd.read_csv('./dataset/train/BSC_1_1_annotated.csv')
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     # #show_data(data)
     # # a = data.iloc[4:5,0]
     # # print(a)
-    data = pd.read_csv('./dataset/train/STU_1_1_annotated.csv')
-
-    show_data(data)
+    # data = pd.read_csv('./dataset/train/STU_1_1_annotated.csv')
+    #
+    # show_data(data)
 
