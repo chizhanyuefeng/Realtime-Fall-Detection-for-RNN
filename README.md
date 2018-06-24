@@ -3,6 +3,7 @@
 <p align="left">
 <img src="https://github.com/chizhanyuefeng/Fall_Detection_for_RNN/blob/master/result/rnn.gif", width="720">
 </p>
+
 ## 使用RNN来完成跌倒数据的分析和检测识别
 由于传感器是按照时间序列进行获取的数据，所以本项目采用RNN来进行网络模型设计。
 其中数据采集频率为50HZ（大于50HZ的数据，通过截取降为50HZ）。
