@@ -6,9 +6,13 @@
 *.png
 
 # dataset
-raw/
-train/
-test/
+
+*.csv
+#raw/
+#train/
+#test/
+#video/
+#kalman/
 
 # train logs
 *.logs
