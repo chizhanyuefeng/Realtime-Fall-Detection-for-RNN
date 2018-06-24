@@ -174,7 +174,7 @@ def find_all_data_and_filtrate(path):
 
 def main():
     #find_all_data_and_extract(RAW_DATA_PATH)
-    find_all_data_and_filtrate('./dataset/test/')
+    find_all_data_and_filtrate('./dataset/kalman/')
 
 if __name__ == '__main__':
     main()
