@@ -7,10 +7,8 @@ from build_rnn import AFD_RNN
 from data_load import DataLoad
 from utils import parser_cfg_file
 
-
-
-Label = {1: 'Standing', 2: 'Walking', 3: 'Joging', 4: 'Jumping', 5: 'Up stair', 6: 'Down stair', 7: 'SCH', 8: 'SIT', 9: 'CHU',
-         10: 'Lying', 0: 'Falling', 15: 'CSI', 16: 'CSO'}
+Label = {1: 'Standing', 2: 'Walking', 3: 'Joging', 4: 'Jumping', 5: 'Up stair', 6: 'Down stair', 7: 'stand to sit',
+         8: 'Siting', 9: 'Sit to stand', 10: 'Lying', 0: 'Falling', 15: 'CSI', 16: 'CSO'}
 
 class Run_AFD_RNN(object):
 
@@ -22,7 +20,6 @@ class Run_AFD_RNN(object):
         if ckpt is None:
             raise FileExistsError(str(mode_dir, '没有模型可以加载'))
 
-        #batch_size = data.shape[0]
         net_config = parser_cfg_file('./config/rnn_net.cfg')
         self.rnn_net = AFD_RNN(net_config, batch_size, time_step)
         predict = self.rnn_net.build_net_graph()
@@ -47,8 +44,6 @@ class Run_AFD_RNN(object):
 
     def draw_flow(self, test_data, test_label):
         data_size = test_data.shape[0]
-        plt.axis([0, 151, -20, 20])
-        plt.ion()
 
         x = [_ for _ in range(150)]
         ax = [0 for _ in range(150)]
@@ -60,6 +55,8 @@ class Run_AFD_RNN(object):
 
         start_time = time.time()
 
+        plt.axis([0, 151, -20, 20])
+        plt.ion()
         for i in range(num):
             if i > int(time_step/run_step):
                 predict = run.run(test_data[i * run_step - time_step: i * run_step, :])
@@ -78,7 +75,8 @@ class Run_AFD_RNN(object):
 
             plt.title(title)
             plt.draw()
-            plt.pause(0.000001)
+            plt.pause(0.001)
+
         during = str(time.time() - start_time)
         print('检测耗时=', during)
 
